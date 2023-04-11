@@ -23,15 +23,21 @@ class PlacelistAdapter(var placesfrag : PlacelistFragment) : RecyclerView.Adapte
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.placeName.text = "Eslöv"
+
+        var allcities = placesfrag.viewModel.loadcities(placesfrag.requireContext())
+
+        holder.placeName.text = allcities[position]
 
         holder.itemView.setOnClickListener {
+
+            placesfrag.viewModel.setCurrentCity(placesfrag.requireContext(), allcities[position])
+
             placesfrag.clickPlace()
         }
     }
 
     override fun getItemCount(): Int {
-        return 500
+        return placesfrag.viewModel.loadcities(placesfrag.requireContext()).size
     }
 
 }

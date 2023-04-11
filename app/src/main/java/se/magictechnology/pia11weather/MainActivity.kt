@@ -25,6 +25,10 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.beginTransaction().replace(R.id.mainFragCon, SettingsFragment()).commit()
         }
 
+        // TODO: Kolla om senaste stad finns
+        supportFragmentManager.beginTransaction().replace(R.id.mainFragCon, PlacelistFragment()).commit()
+
+
     }
 }
 

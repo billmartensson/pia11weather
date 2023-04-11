@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import se.magictechnology.pia11weather.databinding.FragmentPlacelistBinding
@@ -14,6 +15,10 @@ class PlacelistFragment : Fragment() {
 
     private var _binding: FragmentPlacelistBinding? = null
     private val binding get() = _binding!!
+
+    val viewModel : WeatherViewmodel by activityViewModels()
+
+    var placesadapter = PlacelistAdapter(this)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,8 +42,21 @@ class PlacelistFragment : Fragment() {
 
         val placesRecview = binding.placelistRV
 
-        placesRecview.adapter = PlacelistAdapter(this)
+        placesRecview.adapter = placesadapter
         placesRecview.layoutManager = LinearLayoutManager(requireContext())
+
+        binding.addCityButton.setOnClickListener {
+            var cityname = binding.addCityET.text.toString()
+
+            binding.addCityET.setText("")
+
+            // TODO: Kolla om stad är felaktig
+
+            viewModel.addCity(requireContext(), cityname)
+
+            placesadapter.notifyDataSetChanged()
+
+        }
     }
 
     fun clickPlace() {
