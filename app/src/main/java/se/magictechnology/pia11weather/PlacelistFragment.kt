@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import se.magictechnology.pia11weather.databinding.FragmentPlacelistBinding
@@ -50,13 +52,21 @@ class PlacelistFragment : Fragment() {
 
             binding.addCityET.setText("")
 
-            // TODO: Kolla om stad är felaktig
-
             viewModel.addCity(requireContext(), cityname)
 
-            placesadapter.notifyDataSetChanged()
-
         }
+
+        val errorObserver = Observer<Boolean> {
+            if(it == false) {
+                placesadapter.notifyDataSetChanged()
+            } else {
+                // Visa felmeddelande
+                Toast.makeText(requireContext(), "Felaktig stad!", Toast.LENGTH_LONG).show()
+            }
+        }
+        viewModel.apierror.observe(viewLifecycleOwner, errorObserver)
+
+
     }
 
     fun clickPlace() {

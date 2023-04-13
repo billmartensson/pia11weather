@@ -11,4 +11,12 @@ class WeatherData {
     var wind = ""
     var description = ""
 
+    var forecast = listOf<WeatherForecast>()
+}
+
+@Serializable
+class WeatherForecast {
+    var day = ""
+    var temperature = ""
+    var wind = ""
 }

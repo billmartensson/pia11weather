@@ -20,9 +20,21 @@ class WeatherViewmodel : ViewModel() {
         MutableLiveData<WeatherData>()
     }
 
+    val apierror: MutableLiveData<Boolean> by lazy {
+        MutableLiveData<Boolean>()
+    }
+
     fun loadWeather(context : Context) {
+        loadWeather(context, null)
+    }
+
+    fun loadWeather(context : Context, addcityname : String?) {
 
         var cityname = getCurrentCity(context)
+
+        if(addcityname != null) {
+            cityname = addcityname
+        }
 
         if(cityname == null) {
             return
@@ -53,15 +65,39 @@ class WeatherViewmodel : ViewModel() {
                 response.use {
                     if (!response.isSuccessful) throw IOException("Unexpected code $response")
 
+                    Log.i("PIA11DEBUG", "FICK SVAR")
+
+                    if(response.isSuccessful) {
+                        Log.i("PIA11DEBUG", "GICK BRA")
+                    } else {
+                        Log.i("PIA11DEBUG", "GICK INTE BRA")
+                    }
+
+                    Log.i("PIA11DEBUG", response.code.toString())
+
                     var responseString = response.body!!.string()
+
+                    Log.i("PIA11DEBUG", responseString)
 
                     val weather = Json { ignoreUnknownKeys = true}.decodeFromString<WeatherData>(responseString)
 
                     weather.cityName = cityname
 
-                    viewModelScope.launch(Dispatchers.Main) {
-                        currentCityWeather.value = weather
+                    if(weather.temperature == "") {
+                        viewModelScope.launch(Dispatchers.Main) {
+                            apierror.value = true
+                        }
+                    } else {
+                        viewModelScope.launch(Dispatchers.Main) {
+                            if(addcityname != null) {
+                                saveCity(context, addcityname)
+                            }
+                            apierror.value = false
+                            currentCityWeather.value = weather
+                        }
                     }
+
+
 
                 }
             }
@@ -74,6 +110,11 @@ class WeatherViewmodel : ViewModel() {
     // TODO: Undvika använda context här
     fun addCity(context : Context, cityname : String) {
 
+        loadWeather(context, cityname)
+
+    }
+
+    private fun saveCity(context: Context, cityname : String) {
         val sharedPref = context.getSharedPreferences("se.magictechnology.pia11weather.shared", Context.MODE_PRIVATE)
 
         var savedCities = sharedPref.getStringSet("cities", mutableSetOf<String>())
@@ -83,7 +124,6 @@ class WeatherViewmodel : ViewModel() {
         val editor = sharedPref.edit()
         editor.putStringSet("cities", savedCities)
         editor.commit()
-
     }
 
     fun loadcities(context : Context) : List<String> {

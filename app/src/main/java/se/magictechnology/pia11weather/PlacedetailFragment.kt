@@ -38,14 +38,28 @@ class PlacedetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.cityNameTV.text = ""
+        binding.tempTV.text = ""
+        binding.windTV.text = ""
+        binding.descriptionTV.text = ""
+
+
         val weatherObserver = Observer<WeatherData> { currentWeather ->
             binding.cityNameTV.text = currentWeather.cityName
             binding.tempTV.text = currentWeather.temperature
             binding.windTV.text = currentWeather.wind
             binding.descriptionTV.text = currentWeather.description
+
         }
 
         viewModel.currentCityWeather.observe(viewLifecycleOwner, weatherObserver)
+
+        val errorObserver = Observer<Boolean> {
+            if(it == false) {
+                // Visa load error, försök igen?
+            }
+        }
+        viewModel.apierror.observe(viewLifecycleOwner, errorObserver)
 
         viewModel.loadWeather(requireContext())
     }
