@@ -43,13 +43,11 @@ class PlacedetailFragment : Fragment() {
             binding.tempTV.text = currentWeather.temperature
             binding.windTV.text = currentWeather.wind
             binding.descriptionTV.text = currentWeather.description
-
-
         }
 
         viewModel.currentCityWeather.observe(viewLifecycleOwner, weatherObserver)
 
-        viewModel.loadWeather()
+        viewModel.loadWeather(requireContext())
     }
 
 }

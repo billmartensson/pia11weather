@@ -3,11 +3,15 @@ package se.magictechnology.pia11weather
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import androidx.activity.viewModels
+import androidx.fragment.app.activityViewModels
 import se.magictechnology.pia11weather.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+
+    val viewModel : WeatherViewmodel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -16,7 +20,6 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        supportFragmentManager.beginTransaction().replace(R.id.mainFragCon, PlacedetailFragment()).commit()
 
         binding.goPlacelistButton.setOnClickListener {
             supportFragmentManager.beginTransaction().replace(R.id.mainFragCon, PlacelistFragment()).commit()
@@ -25,8 +28,13 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.beginTransaction().replace(R.id.mainFragCon, SettingsFragment()).commit()
         }
 
-        // TODO: Kolla om senaste stad finns
-        supportFragmentManager.beginTransaction().replace(R.id.mainFragCon, PlacelistFragment()).commit()
+        val currentcity = viewModel.getCurrentCity(this)
+
+        if(currentcity == null) {
+            supportFragmentManager.beginTransaction().replace(R.id.mainFragCon, PlacelistFragment()).commit()
+        } else {
+            supportFragmentManager.beginTransaction().replace(R.id.mainFragCon, PlacedetailFragment()).commit()
+        }
 
 
     }
